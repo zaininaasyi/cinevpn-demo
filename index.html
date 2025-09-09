@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CineVPN Demo - Nonton Film Pakai VPN</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #0f0f1a;
+      color: #fff;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* HALAMAN BLOKIR */
+    #blokir-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 80vh;
+      text-align: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    #blokir-page h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #ff4d4d;
+    }
+
+    #blokir-page p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #e0e0e0;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    /* HALAMAN FILM */
+    #film-page {
+      display: none; /* disembunyikan dulu */
+    }
+
+    header {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      color: #00d4ff;
+    }
+
+    .logout-btn {
+      background: #dc3545;
+      margin-top: 20px;
+    }
+
+    .logout-btn:hover {
+      background: #c82333;
+    }
+
+    /* DAFTAR FILM */
+    #film-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .film-card {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .film-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .film-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .film-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .film-card p {
+      font-size: 0.95rem;
+      color: #ccc;
+      margin-bottom: 15px;
+      min-height: 60px;
+    }
+
+    .play-btn {
+      background: #28a745;
+      width: 100%;
+    }
+
+    .play-btn:hover {
+      background: #218838;
+    }
+
+    /* FOOTER EDUKASI */
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #aaa;
+      border-top: 1px solid #333;
+    }
+
+    @media (max-width: 768px) {
+      #blokir-page h1 {
+        font-size: 2rem;
+      }
+      #blokir-page p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HALAMAN BLOKIR (DEFAULT) -->
+    <div id="blokir-page">
+      <h1>🔐 AKSES DITOLAK</h1>
+      <p>Anda harus menggunakan VPN untuk menonton konten di CineVPN Demo.</p>
+      <p>Silakan aktifkan VPN dan refresh halaman.</p>
+      <button class="btn" id="vpn-toggle">🔘 Aktifkan VPN</button>
+    </div>
+
+    <!-- HALAMAN FILM (SEMBUNYI AWAL) -->
+    <div id="film-page">
+      <header>
+        <h1>🎬 Selamat Datang di CineVPN Demo</h1>
+        <button class="btn logout-btn" id="vpn-logout">🔌 Nonaktifkan VPN</button>
+      </header>
+
+      <div id="film-list">
+        <!-- Film akan di-generate otomatis via JS -->
+      </div>
+    </div>
+
+    <footer>
+      <p>🔒 Ini adalah simulasi edukatif. Website asli biasanya mendeteksi VPN lewat IP atau header jaringan.</p>
+      <p>© 2025 CineVPN Demo — Untuk Pembelajaran Teknologi Web</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // DATA FILM (bisa ditambah/diubah sesuai kebutuhan)
+    const films = [
+      {
+        id: 1,
+        title: "The Matrix",
+        poster: "https://via.placeholder.com/300x450/1a1a2e/ffffff?text=The+Matrix",
+        description: "Seorang hacker menemukan rahasia dunia yang sebenarnya adalah simulasi.",
+        videoUrl: "https://example.com/video/matrix.mp4"
+      },
+      {
+        id: 2,
+        title: "Inception",
+        poster: "https://via.placeholder.com/300x450/16213e/ffffff?text=Inception",
+        description: "Mencuri ide melalui mimpi dalam mimpi. Siapa yang masih bermimpi?",
+        videoUrl: "https://example.com/video/inception.mp4"
+      },
+      {
+        id: 3,
+        title: "Interstellar",
+        poster: "https://via.placeholder.com/300x450/0f0f1a/ffffff?text=Interstellar",
+        description: "Perjalanan luar angkasa untuk menyelamatkan umat manusia. Waktu adalah dimensi relatif.",
+        videoUrl: "https://example.com/video/interstellar.mp4"
+      },
+      {
+        id: 4,
+        title: "The Dark Knight",
+        poster: "https://via.placeholder.com/300x450/1a1a2e/ffffff?text=Dark+Knight",
+        description: "Batman vs Joker dalam pertarungan psikologis paling legendaris.",
+        videoUrl: "https://example.com/video/darkknight.mp4"
+      }
+    ];
+
+    // ELEMEN DOM
+    const blokirPage = document.getElementById('blokir-page');
+    const filmPage = document.getElementById('film-page');
+    const vpnToggleBtn = document.getElementById('vpn-toggle');
+    const vpnLogoutBtn = document.getElementById('vpn-logout');
+    const filmList = document.getElementById('film-list');
+
+    // CEK STATUS VPN DARI LOCALSTORAGE
+    function cekStatusVPN() {
+      return localStorage.getItem('vpn_aktif') === 'true';
+    }
+
+    // TAMPILKAN HALAMAN SESUAI STATUS
+    function updateTampilan() {
+      if (cekStatusVPN()) {
+        blokirPage.style.display = 'none';
+        filmPage.style.display = 'block';
+        tampilkanFilm();
+      } else {
+        blokirPage.style.display = 'flex';
+        filmPage.style.display = 'none';
+      }
+    }
+
+    // FUNGSI TAMPILKAN FILM
+    function tampilkanFilm() {
+      filmList.innerHTML = '';
+      films.forEach(film => {
+        const card = document.createElement('div');
+        card.className = 'film-card';
+        card.innerHTML = `
+          <img src="${film.poster}" alt="${film.title}">
+          <h3>${film.title}</h3>
+          <p>${film.description}</p>
+          <button class="btn play-btn" onclick="playFilm('${film.videoUrl}', '${film.title}')">▶ Putar</button>
+        `;
+        filmList.appendChild(card);
+      });
+    }
+
+    // FUNGSI PLAY FILM
+    function playFilm(url, title) {
+      alert(`Memutar film: ${title}\n\nURL Video: ${url}\n\nℹ️ Di versi nyata, ini bisa buka player video atau modal.`);
+      // Bisa diganti dengan:
+      // window.open(url, '_blank');
+      // atau buka di <video> element
+    }
+
+    // EVENT: AKTIFKAN VPN
+    vpnToggleBtn.addEventListener('click', () => {
+      localStorage.setItem('vpn_aktif', 'true');
+      updateTampilan();
+    });
+
+    // EVENT: LOGOUT / NONAKTIFKAN VPN
+    vpnLogoutBtn.addEventListener('click', () => {
+      localStorage.setItem('vpn_aktif', 'false');
+      updateTampilan();
+    });
+
+    // JALANKAN SAAT HALAMAN DIBUKA
+    document.addEventListener('DOMContentLoaded', updateTampilan);
+  </script>
+</body>
+</html>
